@@ -1054,3 +1054,22 @@ def foo(x):
 [out]
 a.py:1: error: Type signature has too many arguments
 == Return code: 2
+
+[case testModulesAndPackages]
+# cmd: mypy --package p.a --package p.b --module c
+[file p/__init__.py]
+[file p/a.py]
+def foo(x):
+    # type: (int) -> str
+    return "x"
+[file p/b/__init__.py]
+from ..a import foo
+def bar(a):
+    # type: (int) -> str
+    return foo(a)
+[file c.py]
+import p.b
+p.b.bar("wrong type")
+[out]
+This is wrong
+== Return code: 2
